@@ -1,8 +1,17 @@
 # Polypolars
 
+[![CI](https://github.com/eddiethedean/polypolars/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/eddiethedean/polypolars/actions/workflows/ci.yml)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 **Generate type-safe Polars DataFrames effortlessly using polyfactory**
 
 Inspired by [polyspark](https://github.com/eddiethedean/polyspark), polypolars lets you create realistic test DataFrames from your Python data models—with **automatic schema inference** for Polars.
+
+**Docs:** See the [docs/](docs/) folder and run `mkdocs serve` for the full API reference and examples.
+
+## Example
 
 ```python
 from dataclasses import dataclass
@@ -19,6 +28,10 @@ class User:
 df = User.build_dataframe(size=1000)
 print(df.head())
 ```
+
+## Contents
+
+- [Why Polypolars?](#why-polypolars) · [Installation](#installation) · [Quick Start](#quick-start) · [Schema inference](#schema-inference) · [Type mapping](#type-mapping) · [CLI](#cli) · [I/O and testing](#io-and-testing)
 
 ## Why Polypolars?
 
