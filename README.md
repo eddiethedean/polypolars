@@ -136,7 +136,34 @@ df = User.build_dataframe(size=500)
 | `List[T]`   | `List(T)`  |
 | `Dict[K,V]` | `List(Struct(key, value))` |
 | `Optional[T]` | `T` (nullable) |
+| `Tuple[T, ...]` | `List(T)` |
+| `Tuple[T, T, ...]` (fixed) | `Array(T, n)` |
 | Dataclass / Pydantic | `Struct(...)` |
+
+Use `schema_overrides` (e.g. `{"col": pl.Categorical}`) to override inferred types.
+
+## LazyFrame and chunked building
+
+```python
+# LazyFrame
+lf = Product.build_lazy_dataframe(size=10_000)
+
+# Chunked building for very large size (lower memory)
+df = Product.build_dataframe(size=1_000_000, chunk_size=10_000)
+```
+
+## CLI
+
+```bash
+# Export schema
+polypolars schema export myapp.models:User --output schema.txt
+
+# Validate a file against a model
+polypolars schema validate myapp.models:User data.parquet
+
+# Generate sample data
+polypolars generate myapp.models:User --size 1000 --output users.parquet --format parquet
+```
 
 ## I/O and testing
 

@@ -3,17 +3,13 @@
 import pytest
 
 from polypolars import infer_schema
-from polypolars.exceptions import SchemaInferenceError, UnsupportedTypeError
-
-
-@pytest.fixture
-def skip_if_no_polars():
-    pytest.importorskip("polars")
+from polypolars.exceptions import SchemaInferenceError
 
 
 def test_infer_schema_dataclass(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
+
+    import polars as pl
 
     @dataclass
     class User:
@@ -31,9 +27,10 @@ def test_infer_schema_dataclass(skip_if_no_polars):
 
 
 def test_infer_schema_optional(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
     from typing import Optional
+
+    import polars as pl
 
     @dataclass
     class Model:
@@ -46,9 +43,10 @@ def test_infer_schema_optional(skip_if_no_polars):
 
 
 def test_infer_schema_list(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
     from typing import List
+
+    import polars as pl
 
     @dataclass
     class Model:
@@ -83,3 +81,40 @@ def test_infer_schema_invalid_column_raises(skip_if_no_polars):
 
     with pytest.raises(SchemaInferenceError):
         infer_schema(User, schema=["id", "nonexistent"])
+
+
+def test_infer_schema_typed_dict(skip_if_no_polars):
+    from typing import TypedDict
+
+    import polars as pl
+
+    class MyTypedDict(TypedDict):
+        id: int
+        name: str
+        score: float
+
+    schema = infer_schema(MyTypedDict)
+    assert schema["id"] == pl.Int64
+    assert schema["name"] == pl.String
+    assert schema["score"] == pl.Float64
+
+
+def test_build_dataframe_from_typed_dict_schema(skip_if_no_polars):
+    """TypedDict schema can be used to create a DataFrame from dicts (polyfactory does not build TypedDict)."""
+    from typing import TypedDict
+
+    import polars as pl
+
+    from polypolars import infer_schema
+
+    class ItemDict(TypedDict):
+        key: int
+        value: str
+
+    schema = infer_schema(ItemDict)
+    data = [{"key": 1, "value": "a"}, {"key": 2, "value": "b"}]
+    df = pl.DataFrame(data, schema=schema)
+    assert df.height == 2
+    assert list(df.columns) == ["key", "value"]
+    assert df["key"].dtype == pl.Int64
+    assert df["value"].dtype == pl.String

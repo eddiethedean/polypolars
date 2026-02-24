@@ -32,6 +32,8 @@ class PolarsFactory(DataclassFactory[T], ABC):
         cls,
         size: int = 10,
         schema: Optional[Union[Dict[str, Any], List[str]]] = None,
+        schema_overrides: Optional[Dict[str, Any]] = None,
+        chunk_size: Optional[int] = None,
         **kwargs: Any,
     ) -> Any:
         """Build a Polars DataFrame with generated data.
@@ -39,6 +41,8 @@ class PolarsFactory(DataclassFactory[T], ABC):
         Args:
             size: Number of rows to generate.
             schema: Optional explicit schema (dict of column name -> Polars dtype, or list of column names).
+            schema_overrides: Optional per-column dtype overrides (e.g. {"col": pl.Categorical}).
+            chunk_size: If set, build in chunks and concat (reduces memory for very large size).
             **kwargs: Additional keyword arguments passed to the factory.
 
         Returns:
@@ -49,9 +53,45 @@ class PolarsFactory(DataclassFactory[T], ABC):
 
         import polars as pl
 
-        inferred_schema = infer_schema(cls.__model__, schema)
+        inferred_schema = infer_schema(cls.__model__, schema, schema_overrides=schema_overrides)
+        if chunk_size is not None and chunk_size > 0 and size > chunk_size:
+            chunks = []
+            remaining = size
+            while remaining > 0:
+                n = min(chunk_size, remaining)
+                data = cls.build_dicts(size=n, **kwargs)
+                chunks.append(pl.DataFrame(data, schema=inferred_schema))
+                remaining -= n
+            return pl.concat(chunks)
         data = cls.build_dicts(size=size, **kwargs)
         return pl.DataFrame(data, schema=inferred_schema)
+
+    @classmethod
+    def build_lazy_dataframe(
+        cls,
+        size: int = 10,
+        schema: Optional[Union[Dict[str, Any], List[str]]] = None,
+        schema_overrides: Optional[Dict[str, Any]] = None,
+        chunk_size: Optional[int] = None,
+        **kwargs: Any,
+    ) -> Any:
+        """Build a Polars LazyFrame with generated data.
+
+        Args:
+            size: Number of rows to generate.
+            schema: Optional explicit schema.
+            schema_overrides: Optional per-column dtype overrides.
+            chunk_size: If set, build DataFrame in chunks then convert to LazyFrame.
+            **kwargs: Additional keyword arguments passed to the factory.
+
+        Returns:
+            A Polars LazyFrame with generated data.
+        """
+        df = cls.build_dataframe(
+            size=size, schema=schema, schema_overrides=schema_overrides,
+            chunk_size=chunk_size, **kwargs
+        )
+        return df.lazy()
 
     @classmethod
     def build_dicts(
@@ -132,6 +172,10 @@ def polars_factory(cls: Type[T]) -> Type[T]:
                 def create_dataframe_from_dicts(cls, *args: Any, **kwargs: Any) -> Any:
                     return PolarsFactory.create_dataframe_from_dicts.__func__(cls, *args, **kwargs)  # type: ignore[attr-defined]
 
+                @classmethod
+                def build_lazy_dataframe(cls, *args: Any, **kwargs: Any) -> Any:
+                    return PolarsFactory.build_lazy_dataframe.__func__(cls, *args, **kwargs)  # type: ignore[attr-defined]
+
             factory_class = type(
                 f"_{cls.__name__}Factory",
                 (_PydanticPolarsFactory,),
@@ -178,9 +222,21 @@ def polars_factory(cls: Type[T]) -> Type[T]:
     ) -> Any:
         return factory_class.create_dataframe_from_dicts(data, schema=schema)  # type: ignore[attr-defined]
 
+    @classmethod  # type: ignore[misc]
+    @functools.wraps(PolarsFactory.build_lazy_dataframe)
+    def build_lazy_dataframe(
+        model_cls: Type[T],
+        size: int = 10,
+        schema: Optional[Union[Dict[str, Any], List[str]]] = None,
+        chunk_size: Optional[int] = None,
+        **kwargs: Any,
+    ) -> Any:
+        return factory_class.build_lazy_dataframe(size=size, schema=schema, chunk_size=chunk_size, **kwargs)  # type: ignore[attr-defined]
+
     cls.build_dataframe = build_dataframe  # type: ignore[attr-defined]
     cls.build_dicts = build_dicts  # type: ignore[attr-defined]
     cls.create_dataframe_from_dicts = create_dataframe_from_dicts  # type: ignore[attr-defined]
+    cls.build_lazy_dataframe = build_lazy_dataframe  # type: ignore[attr-defined]
     cls._polypolars_factory = factory_class  # type: ignore[attr-defined]
 
     return cls

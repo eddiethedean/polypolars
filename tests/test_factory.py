@@ -8,11 +8,13 @@ from polypolars import (
     polars_factory,
 )
 from polypolars.exceptions import PolarsNotAvailableError
+from polypolars.protocols import is_polars_available
 
 
-@pytest.fixture
-def skip_if_no_polars():
+def test_is_polars_available_when_installed():
+    """is_polars_available returns True when polars is installed."""
     pytest.importorskip("polars")
+    assert is_polars_available() is True
 
 
 def test_build_dicts_without_polars():
@@ -35,8 +37,9 @@ def test_build_dicts_without_polars():
 
 
 def test_build_dataframe_dataclass(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
+
+    import polars as pl
 
     @polars_factory
     @dataclass
@@ -55,8 +58,9 @@ def test_build_dataframe_dataclass(skip_if_no_polars):
 
 
 def test_build_dataframe_convenience(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
+
+    import polars as pl
 
     @dataclass
     class Item:
@@ -70,8 +74,9 @@ def test_build_dataframe_convenience(skip_if_no_polars):
 
 
 def test_create_dataframe_from_dicts(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
+
+    import polars as pl
 
     @polars_factory
     @dataclass
@@ -105,8 +110,9 @@ def test_build_dataframe_requires_polars():
 
 
 def test_classic_factory(skip_if_no_polars):
-    import polars as pl
     from dataclasses import dataclass
+
+    import polars as pl
 
     @dataclass
     class Product:
@@ -121,3 +127,56 @@ def test_classic_factory(skip_if_no_polars):
     assert isinstance(df, pl.DataFrame)
     assert df.height == 20
     assert df.columns == ["product_id", "name", "price"]
+
+
+def test_build_lazy_dataframe(skip_if_no_polars):
+    from dataclasses import dataclass
+
+    import polars as pl
+
+    @polars_factory
+    @dataclass
+    class User:
+        id: int
+        name: str
+
+    lf = User.build_lazy_dataframe(size=7)
+    assert isinstance(lf, pl.LazyFrame)
+    df = lf.collect()
+    assert df.height == 7
+    assert df.columns == ["id", "name"]
+
+
+def test_build_dataframe_chunk_size(skip_if_no_polars):
+    from dataclasses import dataclass
+
+    import polars as pl
+
+    @polars_factory
+    @dataclass
+    class Row:
+        id: int
+        value: float
+
+    df = Row.build_dataframe(size=100, chunk_size=30)
+    assert isinstance(df, pl.DataFrame)
+    assert df.height == 100
+    assert df.columns == ["id", "value"]
+    assert df["id"].dtype == pl.Int64
+    assert df["value"].dtype == pl.Float64
+
+
+def test_build_dataframe_schema_overrides(skip_if_no_polars):
+    from dataclasses import dataclass
+
+    import polars as pl
+
+    @polars_factory
+    @dataclass
+    class User:
+        id: int
+        name: str
+
+    df = User.build_dataframe(size=5, schema_overrides={"name": pl.Categorical})
+    assert df.height == 5
+    assert df["name"].dtype == pl.Categorical

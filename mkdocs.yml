@@ -1,0 +1,28 @@
+site_name: Polypolars
+site_description: Generate Polars DataFrames using polyfactory
+site_url: https://github.com/eddiethedean/polypolars
+repo_url: https://github.com/eddiethedean/polypolars
+edit_uri: edit/main/docs/
+
+theme:
+  name: readthedocs
+
+nav:
+  - Home: index.md
+  - Quick Start: quickstart.md
+  - API Reference:
+    - factory: api/factory.md
+    - schema: api/schema.md
+    - io: api/io.md
+    - testing: api/testing.md
+  - Examples:
+    - Nested structs: examples/nested.md
+    - Custom providers: examples/custom_providers.md
+  - Roadmap: roadmap.md
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.snippets
+  - admonition

@@ -4,7 +4,7 @@ from dataclasses import fields as dataclass_fields
 from dataclasses import is_dataclass
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, Dict, List, Literal, Optional, Type, Union, get_args, get_origin
+from typing import Any, Dict, List, Literal, Optional, Tuple, Type, Union, get_args, get_origin
 
 from typing_extensions import get_type_hints
 
@@ -106,6 +106,19 @@ def python_type_to_polars_type(python_type: Type, nullable: bool = True) -> Any:
     if python_type in type_mapping:
         return type_mapping[python_type]
 
+    # Tuple (fixed size) -> Array
+    if origin in (tuple, Tuple) and args:
+        if len(args) == 2 and args[1] is Ellipsis:
+            # Tuple[T, ...] -> List(T)
+            inner = python_type_to_polars_type(args[0], nullable=True)
+            return pl.List(inner)
+        # Tuple[T, T, ...] -> Array(inner, size)
+        try:
+            inner = python_type_to_polars_type(args[0], nullable=True)
+            return pl.Array(inner, len(args))
+        except Exception:
+            pass
+
     # List -> List type
     if origin in (list, List):
         if not args:
@@ -134,7 +147,7 @@ def python_type_to_polars_type(python_type: Type, nullable: bool = True) -> Any:
         except Exception:
             pass
 
-    raise UnsupportedTypeError(f"Cannot convert type {python_type} to Polars type")
+    raise UnsupportedTypeError("Cannot convert to Polars type", type_hint=python_type)
 
 
 def dataclass_to_struct_type(dataclass_type: Type) -> Any:
@@ -209,6 +222,7 @@ def typed_dict_to_struct_type(typed_dict_type: Type) -> Any:
 def infer_schema(
     model: Type,
     schema: Optional[Union[Dict[str, Any], List[str]]] = None,
+    schema_overrides: Optional[Dict[str, Any]] = None,
 ) -> Any:
     """Infer or validate a Polars schema from a model type.
 
@@ -239,7 +253,10 @@ def infer_schema(
 
     inferred = {}
     for name, py_type in fields_source:
-        inferred[name] = python_type_to_polars_type(py_type, nullable=is_optional(py_type))
+        if schema_overrides and name in schema_overrides:
+            inferred[name] = schema_overrides[name]
+        else:
+            inferred[name] = python_type_to_polars_type(py_type, nullable=is_optional(py_type))
 
     if schema is None:
         return inferred
