@@ -37,4 +37,19 @@ class User:
 df = User.build_dataframe(size=1000)
 ```
 
+Example output (first 5 rows; data varies per run):
+
+```
+shape: (5, 3)
+┌──────┬──────────────────────┬──────────────────────┐
+│ id   ┆ name                 ┆ email                │
+│ ---  ┆ ---                  ┆ ---                  │
+│ i64  ┆ str                  ┆ str                  │
+╞══════╪══════════════════════╪══════════════════════╡
+│ 3167 ┆ QmYHeLMDMxWChjihAFxU ┆ vHGMKHjXsMBlxLuhqpUE │
+│ 1028 ┆ hvLXPtlqURtwzqeyJruo ┆ ePDAdtelIEiRfEuAgoPz │
+...
+└──────┴──────────────────────┴──────────────────────┘
+```
+
 See [Quick Start](quickstart.md) and [API Reference](api/factory.md) for more.

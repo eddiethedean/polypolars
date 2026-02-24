@@ -1,6 +1,7 @@
 # Polypolars
 
 [![CI](https://github.com/eddiethedean/polypolars/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/eddiethedean/polypolars/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/polypolars.svg)](https://pypi.org/project/polypolars/)
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
@@ -9,7 +10,7 @@
 
 Inspired by [polyspark](https://github.com/eddiethedean/polyspark), polypolars lets you create realistic test DataFrames from your Python data models—with **automatic schema inference** for Polars.
 
-**Docs:** See the [docs/](docs/) folder and run `mkdocs serve` for the full API reference and examples.
+**Docs:** See the [docs/](https://github.com/eddiethedean/polypolars/tree/main/docs) folder and run `mkdocs serve` for the full API reference and examples.
 
 ## Example
 
@@ -29,9 +30,26 @@ df = User.build_dataframe(size=1000)
 print(df.head())
 ```
 
+Example output (data varies per run):
+
+```
+shape: (5, 3)
+┌──────┬──────────────────────┬──────────────────────┐
+│ id   ┆ name                 ┆ email                │
+│ ---  ┆ ---                  ┆ ---                  │
+│ i64  ┆ str                  ┆ str                  │
+╞══════╪══════════════════════╪══════════════════════╡
+│ 3167 ┆ QmYHeLMDMxWChjihAFxU ┆ vHGMKHjXsMBlxLuhqpUE │
+│ 1028 ┆ hvLXPtlqURtwzqeyJruo ┆ ePDAdtelIEiRfEuAgoPz │
+│ 9048 ┆ NhnyGGQsTjxPEndxaOCt ┆ znmByWtpwofUGKolkJrs │
+│  971 ┆ ZlkxcjcVAZfLUkCwHRFG ┆ PTtzmMHcvLQPcOrAgFpl │
+│ 3813 ┆ tIqqrgyYjULzdyRKkMKK ┆ tMAFeQewaQFtRGEvOdqW │
+└──────┴──────────────────────┴──────────────────────┘
+```
+
 ## Contents
 
-- [Why Polypolars?](#why-polypolars) · [Installation](#installation) · [Quick Start](#quick-start) · [Schema inference](#schema-inference) · [Type mapping](#type-mapping) · [CLI](#cli) · [I/O and testing](#io-and-testing)
+- [Why Polypolars?](https://github.com/eddiethedean/polypolars#why-polypolars) · [Installation](https://github.com/eddiethedean/polypolars#installation) · [Quick Start](https://github.com/eddiethedean/polypolars#quick-start) · [Schema inference](https://github.com/eddiethedean/polypolars#schema-inference) · [Type mapping](https://github.com/eddiethedean/polypolars#type-mapping) · [CLI](https://github.com/eddiethedean/polypolars#cli) · [I/O and testing](https://github.com/eddiethedean/polypolars#io-and-testing)
 
 ## Why Polypolars?
 
@@ -77,6 +95,23 @@ print(df.head())
 
 # Or get dicts
 dicts = Product.build_dicts(size=50)
+```
+
+Example output (first 5 rows; data varies per run):
+
+```
+shape: (5, 5)
+┌────────────┬──────────────────────┬──────────────┬──────────────────────┬──────────┐
+│ product_id ┆ name                 ┆ price        ┆ description          ┆ in_stock │
+│ ---        ┆ ---                  ┆ ---          ┆ ---                  ┆ ---      │
+│ i64        ┆ str                  ┆ f64          ┆ str                  ┆ bool     │
+╞════════════╪══════════════════════╪══════════════╪══════════════════════╪══════════╡
+│ 5582       ┆ hKJsoOOXlwgLIiiWOCJP ┆ 2.2760e8     ┆ rTUACBLlGBlHXIjzVvPt ┆ false    │
+│ 7099       ┆ ZgUiDVJirxAYRrWIPnpS ┆ 274887.17671 ┆ bHGMXNFRLSDifpywMZrY ┆ true     │
+│ 5372       ┆ MTtVHJkqneaCkoyZNgio ┆ 1.5195e7     ┆ HsAmRwgaphvQxOCJwjSr ┆ false    │
+│ 8650       ┆ fTBYFPiWMFCKauieEXlu ┆ -7.8765e8    ┆ UAnyfVhTUmvcjtzbCufq ┆ true     │
+│ 1023       ┆ MCtTOwvJTjfbpPELcFKm ┆ -97.933431   ┆ PMEHaEOGaoJiDaomXdVX ┆ false    │
+└────────────┴──────────────────────┴──────────────┴──────────────────────┴──────────┘
 ```
 
 ### Classic factory class

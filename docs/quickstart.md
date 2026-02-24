@@ -26,6 +26,21 @@ lf = Product.build_lazy_dataframe(size=100)
 dicts = Product.build_dicts(size=50)
 ```
 
+Example output (first 5 rows; data varies per run):
+
+```
+shape: (5, 5)
+┌────────────┬──────────────────────┬──────────────┬──────────────────────┬──────────┐
+│ product_id ┆ name                 ┆ price        ┆ description          ┆ in_stock │
+│ ---        ┆ ---                  ┆ ---          ┆ ---                  ┆ ---      │
+│ i64        ┆ str                  ┆ f64          ┆ str                  ┆ bool     │
+╞════════════╪══════════════════════╪══════════════╪══════════════════════╪══════════╡
+│ 5582       ┆ hKJsoOOXlwgLIiiWOCJP ┆ 2.2760e8     ┆ rTUACBLlGBlHXIjzVvPt ┆ false    │
+│ 7099       ┆ ZgUiDVJirxAYRrWIPnpS ┆ 274887.17671 ┆ bHGMXNFRLSDifpywMZrY ┆ true     │
+...
+└────────────┴──────────────────────┴──────────────┴──────────────────────┴──────────┘
+```
+
 ## Classic factory class
 
 ```python

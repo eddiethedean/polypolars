@@ -35,6 +35,17 @@ ruff check polypolars tests examples benchmarks
 3. Run tests and ruff.
 4. Open a PR with a clear description. Reference any related issues.
 
+## Publishing to PyPI
+
+Maintainers: from the repo root with `.[dev]` installed:
+
+```bash
+python -m build
+twine upload dist/*
+```
+
+Use a PyPI API token (e.g. `~/.pypirc` or `TWINE_USERNAME` / `TWINE_PASSWORD`). Bump `version` in `pyproject.toml` before each release.
+
 ## Code style
 
 - Follow the existing style (ruff + 100 char line length).

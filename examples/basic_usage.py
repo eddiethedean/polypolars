@@ -1,4 +1,21 @@
-"""Basic usage of polypolars with dataclasses."""
+"""Basic usage of polypolars with dataclasses.
+
+Example output when run (data varies per run):
+
+    Generated dicts: [{'id': 4360, 'name': 'axomjOzCFbMAmjBeukiy', 'email': 'SRLxdIkDgkhjFDXmrZGf', 'age': None, 'active': True}, ...]
+
+    DataFrame shape: (100, 5)
+    shape: (5, 5)
+    ┌──────┬──────────────────────┬──────────────────────┬──────┬────────┐
+    │ id   ┆ name                 ┆ email                ┆ age  ┆ active │
+    │ ---  ┆ ---                  ┆ ---                  ┆ ---  ┆ ---    │
+    │ i64  ┆ str                  ┆ str                  ┆ i64  ┆ bool   │
+    ╞══════╪══════════════════════╪══════════════════════╪══════╪════════╡
+    │ 3730 ┆ efEMwxidkTmUReJBGnVU ┆ RfdxUeKYWFTphGoxvaDl ┆ 9195 ┆ false  │
+    │ 4520 ┆ oXneNDXiNvrZMhGjiOfQ ┆ RmGRlGGOMdBkSDEDhphs ┆ 5887 ┆ true   │
+    ...
+    └──────┴──────────────────────┴──────────────────────┴──────┴────────┘
+"""
 
 import importlib.util
 from dataclasses import dataclass

@@ -13,15 +13,24 @@ class User:
     name: str
     email: str
 
-# Use polyfactory's __randomize_collection_length__ for variable-length lists
-# or provide custom factories via __set_as_default_factory_key__ and model config.
+# Pass polyfactory kwargs through build_dataframe (e.g. for variable-length lists
+# use __randomize_collection_length__; for custom factories see polyfactory docs).
+df = User.build_dataframe(size=50)
+```
 
-# Example: limit string length
-df = User.build_dataframe(
-    size=50,
-    __min_length__=1,
-    __max_length__=10,
-)
+Example output (data varies per run):
+
+```
+shape: (5, 3)
+┌──────┬──────────────────────┬──────────────────────┐
+│ id   ┆ name                 ┆ email                │
+│ ---  ┆ ---                  ┆ ---                  │
+│ i64  ┆ str                  ┆ str                  │
+╞══════╪══════════════════════╪══════════════════════╡
+│ 2276 ┆ zoGWwQKOrLAVoIveTdwi ┆ ACtwdvvYzYMNeTsPgAkP │
+│ 6642 ┆ nnaBxCjpasujWhHcDrcz ┆ ICpTBbqCtEmyFDstckhh │
+│ 73   ┆ leHpNFonTtIRsBEbknLf ┆ BPpdQKEjLUxVWApvecnq │
+└──────┴──────────────────────┴──────────────────────┘
 ```
 
 For more control, subclass the generated factory and override field handlers, or use a dedicated `PolarsFactory` subclass with `__model__` and custom `*_handler` methods (see polyfactory docs).
