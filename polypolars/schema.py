@@ -6,7 +6,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Literal, Optional, Tuple, Type, Union, get_args, get_origin
 
-from typing_extensions import get_type_hints
+from typing_extensions import get_type_hints, is_typeddict
 
 from polypolars.exceptions import SchemaInferenceError, UnsupportedTypeError
 from polypolars.protocols import get_polars_module, is_polars_available
@@ -141,7 +141,8 @@ def python_type_to_polars_type(python_type: Type, nullable: bool = True) -> Any:
     if hasattr(python_type, "model_fields"):
         return pydantic_to_struct_type(python_type)
 
-    if hasattr(python_type, "__annotations__"):
+    # TypedDict (avoid treating arbitrary classes with empty __annotations__ as TypedDict)
+    if is_typeddict(python_type):
         try:
             return typed_dict_to_struct_type(python_type)
         except Exception:
@@ -249,7 +250,7 @@ def infer_schema(
         fields_source = [(f.name, type_hints.get(f.name, f.type)) for f in dataclass_fields(model)]
     elif hasattr(model, "model_fields"):
         fields_source = [(k, v.annotation) for k, v in model.model_fields.items()]
-    elif hasattr(model, "__annotations__"):
+    elif is_typeddict(model):
         fields_source = list(model.__annotations__.items())
     else:
         raise SchemaInferenceError(f"Cannot infer schema from {model}")
@@ -282,6 +283,6 @@ def infer_schema_as_struct(model: Type) -> Any:
         return dataclass_to_struct_type(model)
     if hasattr(model, "model_fields"):
         return pydantic_to_struct_type(model)
-    if hasattr(model, "__annotations__"):
+    if is_typeddict(model):
         return typed_dict_to_struct_type(model)
     raise SchemaInferenceError(f"Cannot infer schema from {model}")

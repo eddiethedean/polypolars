@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import polars as pl
 
-from polypolars import polars_factory, PolarsFactory, build_polars_dataframe
+from polypolars import PolarsFactory, build_polars_dataframe, polars_factory
 
 
 def main():
