@@ -6,6 +6,7 @@ from dataclasses import dataclass
 @dataclass
 class CLIModel:
     """Simple model for polypolars CLI tests."""
+
     id: int
     name: str
     value: float

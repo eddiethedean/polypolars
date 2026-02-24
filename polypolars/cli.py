@@ -61,8 +61,6 @@ def _generate(
     format: str,
 ) -> int:
     """Generate sample data and write to file."""
-    import polars as pl
-
     model = _resolve_model(module_dot_model)
     from polypolars import build_polars_dataframe
 

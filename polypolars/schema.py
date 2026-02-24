@@ -154,6 +154,7 @@ def dataclass_to_struct_type(dataclass_type: Type) -> Any:
     """Convert a dataclass to a Polars Struct type."""
     if not is_polars_available():
         from polypolars.exceptions import PolarsNotAvailableError
+
         raise PolarsNotAvailableError()
 
     pl = get_polars_module()
@@ -178,6 +179,7 @@ def pydantic_to_struct_type(model_type: Type) -> Any:
     """Convert a Pydantic model to a Polars Struct type."""
     if not is_polars_available():
         from polypolars.exceptions import PolarsNotAvailableError
+
         raise PolarsNotAvailableError()
 
     pl = get_polars_module()
@@ -200,6 +202,7 @@ def typed_dict_to_struct_type(typed_dict_type: Type) -> Any:
     """Convert a TypedDict to a Polars Struct type."""
     if not is_polars_available():
         from polypolars.exceptions import PolarsNotAvailableError
+
         raise PolarsNotAvailableError()
 
     pl = get_polars_module()

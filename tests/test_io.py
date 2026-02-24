@@ -37,11 +37,14 @@ def sample_df():
     return Row.build_dataframe(size=10)
 
 
-@pytest.mark.parametrize("fmt,ext,save_fn,load_fn", [
-    ("parquet", "parquet", save_as_parquet, load_parquet),
-    ("json", "json", save_as_json, load_json),
-    ("csv", "csv", save_as_csv, load_csv),
-])
+@pytest.mark.parametrize(
+    "fmt,ext,save_fn,load_fn",
+    [
+        ("parquet", "parquet", save_as_parquet, load_parquet),
+        ("json", "json", save_as_json, load_json),
+        ("csv", "csv", save_as_csv, load_csv),
+    ],
+)
 def test_save_load_formats(sample_df, fmt, ext, save_fn, load_fn):
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / f"out.{ext}"
@@ -112,6 +115,7 @@ def test_load_unsupported_format():
 
 def test_load_and_validate_schema_mismatch(sample_df):
     """load_and_validate raises when file schema does not match expected_schema."""
+
     @dataclass
     class OtherModel:
         id: int
@@ -124,7 +128,9 @@ def test_load_and_validate_schema_mismatch(sample_df):
         expected_schema = infer_schema(OtherModel)
         with pytest.raises(DataIOError) as exc_info:
             load_and_validate(str(path), expected_schema=expected_schema, validate_schema=True)
-        assert "validation" in str(exc_info.value).lower() or "schema" in str(exc_info.value).lower()
+        assert (
+            "validation" in str(exc_info.value).lower() or "schema" in str(exc_info.value).lower()
+        )
 
 
 def test_load_dicts_from_json_missing_file():

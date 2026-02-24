@@ -1,15 +1,12 @@
 """Basic usage of polypolars with dataclasses."""
 
+import importlib.util
 from dataclasses import dataclass
 from typing import Optional
 
 from polypolars import polars_factory
 
-try:
-    import polars as pl
-    HAS_POLARS = True
-except ImportError:
-    HAS_POLARS = False
+HAS_POLARS = importlib.util.find_spec("polars") is not None
 
 
 @polars_factory

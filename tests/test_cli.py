@@ -18,7 +18,9 @@ def _run_cli(args):
     """Run polypolars CLI; return (returncode, stdout, stderr)."""
     env = os.environ.copy()
     existing = env.get("PYTHONPATH", "")
-    env["PYTHONPATH"] = str(_PROJECT_ROOT) + (os.pathsep + existing) if existing else str(_PROJECT_ROOT)
+    env["PYTHONPATH"] = (
+        str(_PROJECT_ROOT) + (os.pathsep + existing) if existing else str(_PROJECT_ROOT)
+    )
     result = subprocess.run(
         [sys.executable, "-m", "polypolars.cli"] + args,
         capture_output=True,
@@ -40,7 +42,9 @@ def test_cli_schema_export_stdout():
 def test_cli_schema_export_to_file():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "schema.txt"
-        code, out, err = _run_cli(["schema", "export", "tests.cli_models:CLIModel", "--output", str(path)])
+        code, out, err = _run_cli(
+            ["schema", "export", "tests.cli_models:CLIModel", "--output", str(path)]
+        )
         assert code == 0
         assert path.exists()
         text = path.read_text()
@@ -65,12 +69,22 @@ def test_cli_schema_validate_success():
 def test_cli_generate_parquet():
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "out.parquet"
-        code, out, err = _run_cli([
-            "generate", "tests.cli_models:CLIModel", "--size", "10", "--output", str(path), "--format", "parquet"
-        ])
+        code, out, err = _run_cli(
+            [
+                "generate",
+                "tests.cli_models:CLIModel",
+                "--size",
+                "10",
+                "--output",
+                str(path),
+                "--format",
+                "parquet",
+            ]
+        )
         assert code == 0
         assert path.exists()
         import polars as pl
+
         df = pl.read_parquet(str(path))
         assert df.height == 10
         assert "Generated" in out

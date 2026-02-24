@@ -7,6 +7,7 @@ from polypolars.exceptions import UnsupportedTypeError
 
 def test_unsupported_type_error_message_contains_hint(skip_if_no_polars):
     """UnsupportedTypeError message includes supported-type hint."""
+
     class CustomType:
         pass
 

@@ -57,6 +57,7 @@ def load_parquet(path: str, **options: Any) -> Any:
 
     try:
         import polars as pl
+
         return pl.read_parquet(path, **options)
     except Exception as e:
         raise DataIOError(f"Failed to load Parquet file: {e}") from e
@@ -69,6 +70,7 @@ def load_json(path: str, **options: Any) -> Any:
 
     try:
         import polars as pl
+
         return pl.read_json(path, **options)
     except Exception as e:
         raise DataIOError(f"Failed to load JSON file: {e}") from e
@@ -85,6 +87,7 @@ def load_csv(
 
     try:
         import polars as pl
+
         return pl.read_csv(path, has_header=has_header, **options)
     except Exception as e:
         raise DataIOError(f"Failed to load CSV file: {e}") from e
@@ -116,6 +119,7 @@ def load_and_validate(
 
         if validate_schema and expected_schema is not None:
             from polypolars.testing import assert_schema_equal
+
             try:
                 assert_schema_equal(expected_schema, df.schema, check_order=False)
             except Exception as e:

@@ -30,15 +30,11 @@ def assert_dataframe_equal(
             "Polars is required for DataFrame comparison. Install it with: pip install polars"
         )
 
-    import polars as pl
-
     count1 = df1.height
     count2 = df2.height
 
     if count1 != count2:
-        raise DataFrameComparisonError(
-            f"DataFrame row counts don't match: {count1} != {count2}"
-        )
+        raise DataFrameComparisonError(f"DataFrame row counts don't match: {count1} != {count2}")
 
     try:
         assert_schema_equal(df1.schema, df2.schema, check_order=check_column_order)
@@ -52,8 +48,8 @@ def assert_dataframe_equal(
 
     if not check_order and count1 > 0:
         by = df1.columns
-        df1 = df1.sort(by)
-        df2 = df2.sort(by)
+        df1 = df1.sort(by)  # type: ignore[arg-type]
+        df2 = df2.sort(by)  # type: ignore[arg-type]
 
     rows1 = df1.to_dicts()
     rows2 = df2.to_dicts()
@@ -66,9 +62,7 @@ def assert_dataframe_equal(
             if val1 != val2:
                 if isinstance(val1, float) and isinstance(val2, float):
                     if not _floats_are_close(val1, val2, rtol, atol):
-                        differences.append(
-                            f"  Row {i}, column '{col_name}': {val1} != {val2}"
-                        )
+                        differences.append(f"  Row {i}, column '{col_name}': {val1} != {val2}")
                 else:
                     differences.append(f"  Row {i}, column '{col_name}': {val1} != {val2}")
 
@@ -102,9 +96,7 @@ def assert_schema_equal(
     names1 = {k for k, _ in items1}
     names2 = {k for k, _ in items2}
     if names1 != names2:
-        raise DataFrameComparisonError(
-            f"Schemas have different field names: {names1 ^ names2}"
-        )
+        raise DataFrameComparisonError(f"Schemas have different field names: {names1 ^ names2}")
 
     schema1_map = dict(items1)
     schema2_map = dict(items2)
@@ -113,9 +105,7 @@ def assert_schema_equal(
         t1 = schema1_map[name]
         t2 = schema2_map[name]
         if t1 != t2:
-            raise DataFrameComparisonError(
-                f"Field '{name}' has different types: {t1} vs {t2}"
-            )
+            raise DataFrameComparisonError(f"Field '{name}' has different types: {t1} vs {t2}")
 
     if check_order and items1 != items2:
         raise DataFrameComparisonError("Schema field order differs")
@@ -142,7 +132,7 @@ def get_column_stats(df: DataFrameProtocol, column: str) -> Dict[str, Any]:
     import polars as pl
 
     total_count = df.height
-    s = df[column]
+    s = df[column]  # type: ignore[index]
     null_count = s.null_count()
     non_null_count = total_count - null_count
     distinct_count = s.n_unique()

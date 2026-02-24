@@ -103,6 +103,7 @@ def test_build_dataframe_requires_polars():
     # If polars is installed, this passes; otherwise we'd need to mock
     try:
         import polars  # noqa: F401
+
         pytest.skip("Polars is installed, cannot test missing case")
     except ImportError:
         with pytest.raises(PolarsNotAvailableError):

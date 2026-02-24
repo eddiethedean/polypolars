@@ -88,8 +88,11 @@ class PolarsFactory(DataclassFactory[T], ABC):
             A Polars LazyFrame with generated data.
         """
         df = cls.build_dataframe(
-            size=size, schema=schema, schema_overrides=schema_overrides,
-            chunk_size=chunk_size, **kwargs
+            size=size,
+            schema=schema,
+            schema_overrides=schema_overrides,
+            chunk_size=chunk_size,
+            **kwargs,
         )
         return df.lazy()
 
@@ -231,7 +234,9 @@ def polars_factory(cls: Type[T]) -> Type[T]:
         chunk_size: Optional[int] = None,
         **kwargs: Any,
     ) -> Any:
-        return factory_class.build_lazy_dataframe(size=size, schema=schema, chunk_size=chunk_size, **kwargs)  # type: ignore[attr-defined]
+        return factory_class.build_lazy_dataframe(  # type: ignore[attr-defined]
+            size=size, schema=schema, chunk_size=chunk_size, **kwargs
+        )
 
     cls.build_dataframe = build_dataframe  # type: ignore[attr-defined]
     cls.build_dicts = build_dicts  # type: ignore[attr-defined]

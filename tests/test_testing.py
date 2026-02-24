@@ -88,7 +88,9 @@ def test_assert_dataframe_equal_different_schema(df):
 
 def test_assert_dataframe_equal_different_value(df):
     df2 = df.clone()
-    df2 = df2.with_columns(pl.when(pl.col("id") == df2["id"][0]).then(pl.lit(999)).otherwise(pl.col("id")).alias("id"))
+    df2 = df2.with_columns(
+        pl.when(pl.col("id") == df2["id"][0]).then(pl.lit(999)).otherwise(pl.col("id")).alias("id")
+    )
     with pytest.raises(DataFrameComparisonError) as exc_info:
         assert_dataframe_equal(df, df2)
     assert "differing" in str(exc_info.value).lower() or "!=" in str(exc_info.value)

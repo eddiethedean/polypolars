@@ -11,6 +11,7 @@ def is_polars_available() -> bool:
     """
     try:
         import polars  # noqa: F401
+
         return True
     except ImportError:
         return False
@@ -24,6 +25,7 @@ def get_polars_module() -> Optional[Any]:
     """
     if is_polars_available():
         import polars as pl
+
         return pl
     return None
 
