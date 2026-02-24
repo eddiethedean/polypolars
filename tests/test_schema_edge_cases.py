@@ -74,6 +74,19 @@ def test_tuple_fixed_to_array():
     assert schema["coords"] == pl.Array(pl.Float64, 3)
 
 
+def test_union_optional_picks_first_non_none_type():
+    """Ensure Union[T1, T2, None] is treated as optional and unwraps deterministically."""
+
+    from typing import Union
+
+    @dataclass
+    class M:
+        x: Union[int, str, None]
+
+    schema = infer_schema(M)
+    assert schema["x"] == pl.Int64
+
+
 def test_unsupported_type_raises():
     class Custom:
         pass

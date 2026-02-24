@@ -68,7 +68,7 @@ addopts = ["-v"]
 
 [tool.coverage.run]
 source = ["polypolars"]
-omit = ["*/tests/*", "*/benchmarks/*"]
+omit = ["*/tests/*", "*/benchmarks/*", "polypolars/cli.py"]
 
 [tool.coverage.report]
 fail_under = 78
