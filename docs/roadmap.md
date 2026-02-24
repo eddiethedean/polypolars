@@ -6,7 +6,7 @@ Many items below have been implemented (see CHANGELOG and the repo).
 
 ---
 
-## Current (v0.1.0)
+## Current (v0.1.1)
 
 - **Factory API**: `@polars_factory` decorator, `PolarsFactory` class, `build_polars_dataframe()`
 - **Schema inference**: Dataclasses, Pydantic v2, TypedDict → Polars dtypes (including `Optional`, `List`, `Dict`, nested structs)
@@ -34,4 +34,4 @@ Many items below have been implemented (see CHANGELOG and the repo).
 
 ---
 
-*Last updated: 2025*
+*Last updated: 2026*
